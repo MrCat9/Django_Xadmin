@@ -4,7 +4,7 @@
 
 
 
-# 执行manage命令
+## 执行manage命令
 pycharm下，tools-->run manage.py task-->输入命令
 
 # 新建app
