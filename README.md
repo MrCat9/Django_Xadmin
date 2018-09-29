@@ -35,6 +35,8 @@ manage.py@djangotest > makemigrations  #生成数据表的py文件
 
 manage.py@djangotest > migrate  #生成数据表
 
+更改了models.py后，要执行makemigrations和migrate
+
 
 
 
