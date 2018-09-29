@@ -22,6 +22,7 @@ tools-->run manage.py task-->startapp <app名>
 cmd下
 
 #转到工程目录
+
 λ python manage.py runserver
 
 
@@ -39,7 +40,9 @@ manage.py@djangotest > migrate  #生成数据表
 
 ## 要在settings.py中配置
 1. 数据库database
+
 2. TEMPLATES目录（html文件的目录）
+
 3. STATICFILES_DIRS目录（静态文件的目录）
 
 
