@@ -33,22 +33,14 @@ manage.py@djangotest > migrate
 
 
 ## 要在settings.py中配置
-1. 数据库
-2. TEMPLATES目录（页面的目录）
-3. STATICFILES_DIRS目录（css的目录）
+1. 数据库database
+2. TEMPLATES目录（html文件的目录）
+3. STATICFILES_DIRS目录（静态文件的目录）
 
 
 
 
 ## 在urls.py中配置url和响应，在views.py中写具体如何响应
-
-
-
-
-
-
-
-
 
 
 
