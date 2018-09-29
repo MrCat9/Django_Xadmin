@@ -24,7 +24,26 @@ cmd下，
 
 ## 生成数据表
 manage下，
+manage.py@djangotest > makemigrations
 manage.py@djangotest > migrate
+
+
+
+
+## 要在settings.py中配置TEMPLATES路径（页面的路径）和STATICFILES_DIRS路径（css的路径）
+
+
+
+
+## 在urls.py中配置url和响应，在views.py中写具体如何响应
+
+
+
+
+
+
+
+
 
 
 
