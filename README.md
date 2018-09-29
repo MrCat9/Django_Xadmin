@@ -55,3 +55,4 @@ manage.py@djangotest > migrate  #生成数据表
 
 
 
+## orm
