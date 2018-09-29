@@ -30,11 +30,9 @@ cmd下
 ## 生成数据表
 manage下
 
-#生成数据表的py文件
-manage.py@djangotest > makemigrations
+manage.py@djangotest > makemigrations  #生成数据表的py文件
 
-#生成数据表
-manage.py@djangotest > migrate
+manage.py@djangotest > migrate  #生成数据表
 
 
 
