@@ -9,24 +9,30 @@ pycharm下
 
 tools-->run manage.py task-->输入命令
 
+
 ## 新建app
-pycharm下，
+pycharm下
+
 tools-->run manage.py task-->startapp <app名>
 
 
 
+
 ## 运行django
-cmd下，
-转到工程目录
+cmd下
+
+#转到工程目录
 λ python manage.py runserver
 
 
 
 
 ## 生成数据表
-manage下，
+manage下
+
 #生成数据表的py文件
 manage.py@djangotest > makemigrations
+
 #生成数据表
 manage.py@djangotest > migrate
 
