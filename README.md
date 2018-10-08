@@ -56,3 +56,6 @@ manage.py@djangotest > migrate  #生成数据表
 
 
 ## orm
+也就是Django的model，使操作数据库像操作类一样简单
+
+
