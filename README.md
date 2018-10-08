@@ -112,6 +112,7 @@ manage.py@djangotest > migrate message  # migrate (app名)  # 生成数据表
 #### 前端post过来的数据会在views.py下的方法的request里面
 
 #### {% csrf_token %}  <!-- Django有保护机制，需要csrf_token才能提交表单 -->
+Django有保护机制，需要csrf_token才能提交表单
 （见message_form.html）
 
 
