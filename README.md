@@ -92,7 +92,7 @@ manage.py@djangotest > migrate message  # migrate (app名)  # 生成数据表
 
 ## model的增删改查
 （见views.py）
-#### 查询数据库中的数据
+### 查询数据库中的数据
     all_messages = UserMessage.objects.all()
     for message in all_messages:
         print(message.name)
@@ -101,7 +101,7 @@ manage.py@djangotest > migrate message  # migrate (app名)  # 生成数据表
     for message in all_messages:
         print(message.name)
 
-#### 向数据库中插入数据
+### 向数据库中插入数据
     user_message = UserMessage()
     user_message.name = "ZhangSan2"
     user_message.message = "helloworld2"
@@ -109,10 +109,11 @@ manage.py@djangotest > migrate message  # migrate (app名)  # 生成数据表
     user_message.email = "2@2.com"
     user_message.save()
 
-#### 前端post过来的数据会在views.py下的方法的request里面
+### 前端post过来的数据会在views.py下的方法的request里面
 
-#### {% csrf_token %}  <!-- Django有保护机制，需要csrf_token才能提交表单 -->
+### {% csrf_token %}  <!-- Django有保护机制，需要csrf_token才能提交表单 -->
 Django有保护机制，需要csrf_token才能提交表单
+
 （见message_form.html）
 
 
