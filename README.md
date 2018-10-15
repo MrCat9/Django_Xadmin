@@ -164,9 +164,15 @@ def getform(request):
 
 
 
+## url配置技巧（url的name）
+（见urls.py）
+（见message_form.html）
 
-
-
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^form/$', getform, name='go_form'),  # $是结束符  # 在html中用url的name的话，便于维护
+    url(r'^form_go/$', getform, name='go_form')  # http://127.0.0.1:8000/form/ 和 http://127.0.0.1:8000/form_go/  访问同一个页面
+]
 
 
 
