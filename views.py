@@ -35,7 +35,31 @@ def getform(request):
 
 
 
-    # 前端post过来的数据会在request里面
+    # # 网页提交表单（前端接收用户填写的数据，post给后端，后端把数据存入数据库）
+    # # 前端post过来的数据会在request里面
+    # if request.method == "POST":  # 判断是post方法才往数据库里存数据，是get方法不存
+    #     # 接收前端post过来的数据
+    #     name = request.POST.get("name", "")  # get()方法用于取字典里的某个值（如："name"），如果取不到返回""
+    #     message = request.POST.get("message", "")
+    #     address = request.POST.get("address", "")
+    #     email = request.POST.get("email", "")
+    #
+    #     # 把数据存入数据库
+    #     user_message = UserMessage()
+    #     user_message.name = name
+    #     user_message.message = message
+    #     user_message.address = address
+    #     user_message.email = email
+    #     user_message.object_id = "helloworld3"
+    #     user_message.save()
+
+
+
+
+    # # 删除数据库中的数据
+    # all_messages = UserMessage.objects.filter(name="ZhangSan", address="上海")
+    # for message in all_messages:
+    #     message.delete()
 
 
 
