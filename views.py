@@ -64,5 +64,16 @@ def getform(request):
 
 
 
+    # 将数据库里的数据显示到html页面中
+    message = None
+    all_messages = UserMessage.objects.filter(name="ZhangSan2")
+    if all_messages:  # 如果数据库里已经有ZhangSan2的数据
+        message = all_messages[0]
+
+
+
+
     #            # request    # html文件名称
-    return render(request, "message_form.html")
+    return render(request, "message_form.html", {
+        "my_message": message  # 向前端传递数据  # 在html文件中配置，使得后端数据能够展示到前端
+    })
