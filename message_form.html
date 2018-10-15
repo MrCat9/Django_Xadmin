@@ -12,26 +12,26 @@
         <span>请留下你的信息.</span>
     </h1>
     <label>
-        <span>姓名 :</span>
-        <input id="name" type="text" name="name" class="error" placeholder="请输入您的姓名"/>
+        <span>姓名 :</span>            <!-- 向前端展示来自后端数据库的值 -->
+        <input id="name" type="text" value="{{ my_message.name }}" name="name" class="error" placeholder="请输入您的姓名"/>
         <div class="error-msg"></div>
     </label>
 
     <label>
-        <span>邮箱 :</span>
-        <input id="email" type="email" value="" name="email" placeholder="请输入邮箱地址"/>
+        <span>邮箱 :</span>                        <!-- if逻辑 --><!-- 还有if not -->
+        <input id="email" type="email" value="{% if my_message.name == "ZhangSan2"%}emailtest{% endif %}" name="email" placeholder="请输入邮箱地址"/>
         <div class="error-msg"></div>
     </label>
 
     <label>
-        <span>联系地址 :</span>
-        <input id="address" type="text" value="" name="address" placeholder="请输入联系地址"/>
+        <span>联系地址 :</span>                             <!-- my_message.address的值取前4位，与“北京”做对比 --><!-- 当slice数字大于等于2时，与“北京”匹配成功 -->
+        <input id="address" type="text" value="{% ifequal my_message.address|slice:"4" "北京" %}北京test{% endifequal %}" name="address" placeholder="请输入联系地址"/>
         <div class="error-msg"></div>
     </label>
 
     <label>
         <span>留言 :</span>
-        <textarea id="message" name="message"  placeholder="请输入你的建议"></textarea>
+        <textarea id="message" name="message"  placeholder="请输入你的建议">{{ my_message.message }}</textarea>
         <div class="error-msg"></div>
     </label>
     <div class="success-msg"></div>
