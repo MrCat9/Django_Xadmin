@@ -186,6 +186,216 @@ urlpatterns = [
 
 
 
+# 慕学网项目
+
+
+
+
+## django app 设计 --> 各app的models设计 --> 数据表生成与修改
+
+
+
+
+## 分析需要的app有：
+users - 用户管理
+
+courses - 课程管理
+
+organization - 机构和教师管理
+
+operation - 用户操作管理
+
+
+
+
+## 新建虚拟环境
+cmd下
+
+mkvirtualenv mxonline
+
+
+
+
+## 新建django项目
+
+
+
+
+## 配置settings.py中的DATABASE
+
+
+
+
+## 在Navicat下创建数据库 mxonline
+
+
+
+
+## 生成django默认的数据表
+tools-->run manage.py task
+
+manage.py@MxOnline > makemigrations
+
+manage.py@MxOnline > migrate
+
+
+
+
+## users app的models设计
+
+
+
+
+### 新建app users
+manage下
+
+manage.py@MxOnline > startapp users
+
+
+
+
+### 在setting.py中注册新建的app
+
+
+
+
+### 编写users的models.py
+django会生成默认的user表（auth_user）
+可以在models.py中继承默认的表，然后改写，扩展django默认的user表
+改写后要在settings.py中配置AUTH_USER_MODEL， 覆盖默认的user表
+
+
+
+
+### 为users的models进行makemigrations，migrate
+manage下
+
+manage.py@MxOnline > makemigrations users
+
+manage.py@MxOnline > migrate users
+
+
+
+
+## django中的循环引用
+可以建更高级的models（operation的models）来调用低级的models（users，courses，organization的models）
+
+
+
+
+## courses app的models设计
+
+
+
+
+### 新建app courses
+
+
+
+
+### 在setting.py中注册新建的app
+
+
+
+
+### 编写courses的models.py
+Course - 课程的基本信息
+Lesson - 章节信息
+Video - 视频
+CourseResource - 课程资源
+
+
+
+
+## organization app的models设计
+
+
+
+
+### 新建app organization
+
+
+
+
+### 在setting.py中注册新建的app
+
+
+
+
+### 编写organization的models.py
+
+
+
+
+### 
+
+
+
+
+### 
+
+
+
+
+### 
+
+
+
+
+### 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
