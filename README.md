@@ -529,13 +529,18 @@ xadmin.site.register(Course, CourseAdmin)  # 把admin和model进行关联注册 
 可以将xadmin的全局配置写在 MxOnline\apps\users\adminx.py 里
 
 class BaseSetting(object):  # xadmin的全局配置
+
     enable_themes = True  # 使用xadmin的主题功能
+	
     use_bootswatch = True
 
 	
 class GlobalSettings(object):
+
     site_title = "慕学后台管理系统"
+	
     site_footer = "慕学在线网"
+	
     menu_style = "accordion"
 
 	
