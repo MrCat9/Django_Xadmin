@@ -261,7 +261,9 @@ manage.py@MxOnline > startapp users
 
 ### 编写users的models.py
 django会生成默认的user表（auth_user）
+
 可以在models.py中继承默认的表，然后改写，扩展django默认的user表
+
 改写后要在settings.py中配置AUTH_USER_MODEL， 覆盖默认的user表
 
 
@@ -300,8 +302,11 @@ manage.py@MxOnline > migrate users
 
 ### 编写courses的models.py
 Course - 课程的基本信息
+
 Lesson - 章节信息
+
 Video - 视频
+
 CourseResource - 课程资源
 
 
@@ -324,7 +329,9 @@ CourseResource - 课程资源
 
 ### 编写organization的models.py
 CourseOrg - 课程机构基本信息
+
 Teacher - 教师基本信息
+
 CityDict - 城市信息
 
 
@@ -347,9 +354,13 @@ CityDict - 城市信息
 
 ### 编写operation的models.py
 UserAsk - 用户咨询
+
 CourseComments - 用户评论
+
 UserFavorite - 用户收藏
+
 UserMessage - 用户消息
+
 UserCourse - 用户学习的课程
 
 
@@ -420,6 +431,7 @@ manage.py@MxOnline > createsuperuser
 在MxOnline\apps\users\admin.py下注册后台管理系统
 
 class UserProfileAdmin(admin.ModelAdmin):  # 为 UserProfile 写一个管理器
+
     pass
 
 admin.site.register(UserProfile, UserProfileAdmin)  # 把admin和model进行关联注册  # register(model, 管理该model的admin)
@@ -478,7 +490,9 @@ pip install xadmin
 import xadmin
 
 urlpatterns = [
+
     url(r'^xadmin/', xadmin.site.urls),
+	
 ]
 
 
@@ -498,9 +512,12 @@ manage.py@djangotest > migrate  #生成数据表
 在app下新建adminx.py文件
 
 class LessonAdmin(object):
+
     list_display = ["course", "name", "add_time"]  # 设置要在后台显示的字段
+	
     search_fields = ["course__name", "name"]  # 设置可以做搜索的字段  # 搜索的字段不能是外键类型(course)的，所以用外键类型(course)下的char类型(name)来做为搜索的字段
-    list_filter = ["course__name", "name", "add_time"]  # 设置可以做过滤分类的字段  # course是外键  # course__name 用外键(course)的name做过滤分类
+    
+	list_filter = ["course__name", "name", "add_time"]  # 设置可以做过滤分类的字段  # course是外键  # course__name 用外键(course)的name做过滤分类
 
 	
 xadmin.site.register(Course, CourseAdmin)  # 把admin和model进行关联注册  # register(model, 管理该model的admin)
@@ -512,17 +529,23 @@ xadmin.site.register(Course, CourseAdmin)  # 把admin和model进行关联注册 
 可以将xadmin的全局配置写在 MxOnline\apps\users\adminx.py 里
 
 class BaseSetting(object):  # xadmin的全局配置
+
     enable_themes = True  # 使用xadmin的主题功能
+	
     use_bootswatch = True
 
 	
 class GlobalSettings(object):
+
     site_title = "慕学后台管理系统"
+	
     site_footer = "慕学在线网"
+	
     menu_style = "accordion"
 
 	
 xadmin.site.register(views.BaseAdminView, BaseSetting)  # 注册BaseSetting
+
 xadmin.site.register(views.CommAdminView, GlobalSettings)# 注册GlobalSettings
 
 
