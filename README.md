@@ -551,14 +551,21 @@ xadmin.site.register(views.CommAdminView, GlobalSettings)# 注册GlobalSettings
 
 
 
+### 设置app在后台管理系统中的显示名称
+#### 在app下的apps.py模块下
+class OperationConfig(AppConfig):
 
-### 可以在app下的apps.py模块下设置app的显示名称
+    name = 'operation'
+	
+    verbose_name = u"用户操作"
+
+#### 在app下的__init__.py模块下配置
+default_app_config = "operation.apps.OperationConfig"
 
 
 
 
-
-##
+## 前台
 
 
 
