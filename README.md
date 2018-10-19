@@ -466,6 +466,7 @@ pip install xadmin
 ### 在settings.py中注册新建的app（xadmin）
 
 'xadmin',
+
 'crispy_forms',
 
 
