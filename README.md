@@ -689,7 +689,7 @@ STATICFILES_DIRS = (
 
 
 
-### 
+### 修改index.html中静态文件的引用
 
 
 
