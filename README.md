@@ -1,16 +1,21 @@
 # Django_xadmin
+
 摘自 https://coding.imooc.com/class/78.html
 
 
 
 
 ## 执行manage命令
+
 pycharm下
 
 tools-->run manage.py task-->输入命令
 
 
+
+
 ## 新建app
+
 pycharm下
 
 tools-->run manage.py task-->startapp <app名>
@@ -19,13 +24,16 @@ tools-->run manage.py task-->startapp <app名>
 
 
 ## 新建好的app需要在setting.py下注册
+
 INSTALLED_APPS
 
 
 
 
 ## 运行django
+
 cmd下
+
 
 #转到工程目录
 
@@ -35,6 +43,7 @@ cmd下
 
 
 ## 生成数据表
+
 manage下
 
 manage.py@djangotest > makemigrations  #生成数据表的py文件
@@ -47,6 +56,7 @@ manage.py@djangotest > migrate  #生成数据表
 
 
 ## 要在settings.py中配置
+
 1. 数据库database
 
 2. TEMPLATES目录（html文件的目录）
@@ -62,19 +72,23 @@ manage.py@djangotest > migrate  #生成数据表
 
 
 ## orm
+
 也就是Django的model，使操作数据库像操作类一样简单
 
 
 
 
 ## models.py在app目录下
+
 models.py下
+
 （见models.py）
 
 
 
 
 ## 定义好model后，通过model直接生成数据表
+
 tools-->run manage.py task  进入到manage下
 
 manage.py@djangotest > makemigrations message  # makemigrations (app名)  # 生成数据表的py文件
@@ -91,8 +105,12 @@ manage.py@djangotest > migrate message  # migrate (app名)  # 生成数据表
 
 
 ## model的增删改查
+
 （见views.py）
+
 ### 查询数据库中的数据
+
+```python
     all_messages = UserMessage.objects.all()
     for message in all_messages:
         print(message.name)
@@ -100,23 +118,30 @@ manage.py@djangotest > migrate message  # migrate (app名)  # 生成数据表
     all_messages = UserMessage.objects.filter(name="ZhangSan", address="上海")
     for message in all_messages:
         print(message.name)
+```
 
 ### 向数据库中插入数据
+
+```python
     user_message = UserMessage()
     user_message.name = "ZhangSan2"
     user_message.message = "helloworld2"
     user_message.address = "北京"
     user_message.email = "2@2.com"
     user_message.save()
+```
 
 ### 前端post过来的数据会在views.py下的方法的request里面
 
 ### {% csrf_token %}  <!-- Django有保护机制，需要csrf_token才能提交表单 -->
+
 Django有保护机制，需要csrf_token才能提交表单
 
 （见message_form.html）
 
 ### 网页提交表单（前端接收用户填写的数据，post给后端，后端把数据存入数据库）
+
+```python
     if request.method == "POST":  # 判断是post方法才往数据库里存数据，是get方法不存
         """接收前端post过来的数据"""
         name = request.POST.get("name", "")  # get()方法用于取字典里的某个值（如："name"），如果取不到返回""
@@ -134,17 +159,24 @@ Django有保护机制，需要csrf_token才能提交表单
         user_message.object_id = "helloworld3"
         user_message.save()
         """"""
+```
 
 ### 删除数据库中的数据
+
+```python
     all_messages = UserMessage.objects.filter(name="ZhangSan", address="上海")
     for message in all_messages:
         message.delete()
-
+```
+		
 
 
 
 ## 将数据库里的数据显示到html页面中
+
 （见views.py）
+
+```python
 def getform(request):
     message = None
     all_messages = UserMessage.objects.filter(name="ZhangSan2")
@@ -154,21 +186,25 @@ def getform(request):
     return render(request, "message_form.html", {
         "my_message": message  # 向前端传递数据  # 在html文件中配置，使得后端数据能够展示到前端（见message_form.html）
     })
+```
 
 
 
 
 ## django的html模板templates中可以使用if判断逻辑，ifequal等函数
+
 （见message_form.html）
 
 
 
 
 ## url配置技巧（url的name）
+
 （见urls.py）
 
 （见message_form.html）
 
+```python
 urlpatterns = [
 
     url(r'^admin/', admin.site.urls),
@@ -178,6 +214,7 @@ urlpatterns = [
     url(r'^form_go/$', getform, name='go_form')  # http://127.0.0.1:8000/form/ 和 http://127.0.0.1:8000/form_go/  访问同一个页面
 	
 ]
+```
 
 
 
@@ -197,6 +234,7 @@ urlpatterns = [
 
 
 ## 分析需要的app有：
+
 users - 用户管理
 
 courses - 课程管理
@@ -209,6 +247,7 @@ operation - 用户操作管理
 
 
 ## 新建虚拟环境
+
 cmd下
 
 mkvirtualenv mxonline
@@ -232,6 +271,7 @@ mkvirtualenv mxonline
 
 
 ## 生成django默认的数据表
+
 tools-->run manage.py task
 
 manage.py@MxOnline > makemigrations
@@ -247,6 +287,7 @@ manage.py@MxOnline > migrate
 
 
 ### 新建app users
+
 manage下
 
 manage.py@MxOnline > startapp users
@@ -260,6 +301,7 @@ manage.py@MxOnline > startapp users
 
 
 ### 编写users的models.py
+
 django会生成默认的user表（auth_user）
 
 可以在models.py中继承默认的表，然后改写，扩展django默认的user表
@@ -270,6 +312,7 @@ django会生成默认的user表（auth_user）
 
 
 ### 为users的models进行makemigrations，migrate
+
 manage下
 
 manage.py@MxOnline > makemigrations users
@@ -280,6 +323,7 @@ manage.py@MxOnline > migrate users
 
 
 ## django中的循环引用
+
 可以建更高级的models（operation的models）来调用低级的models（users，courses，organization的models）
 
 
@@ -301,6 +345,7 @@ manage.py@MxOnline > migrate users
 
 
 ### 编写courses的models.py
+
 Course - 课程的基本信息
 
 Lesson - 章节信息
@@ -328,6 +373,7 @@ CourseResource - 课程资源
 
 
 ### 编写organization的models.py
+
 CourseOrg - 课程机构基本信息
 
 Teacher - 教师基本信息
@@ -353,6 +399,7 @@ CityDict - 城市信息
 
 
 ### 编写operation的models.py
+
 UserAsk - 用户咨询
 
 CourseComments - 用户评论
@@ -367,6 +414,7 @@ UserCourse - 用户学习的课程
 
 
 ## 为models进行makemigrations，migrate
+
 manage下
 
 manage.py@MxOnline > makemigrations
@@ -382,18 +430,22 @@ manage.py@MxOnline > migrate
 
 
 ## 将apps设为根目录
+
 右键apps文件夹，mark directory as --> sources root 
 
 
 
 
 ## 在settings.py中配置apps为根目录
+```python
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
+```
 
 
 
 
 ## 在cmd下运行django
+
 cmd下
 
 转到工程目录下
@@ -406,20 +458,24 @@ ctrl+c 可以退出
 
 
 ## 搭建后台管理系统（django admin）
+
 权限管理
 
 settings.py下可以将后台管理系统（django admin）改为中文
 
+```python
 LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'Asia/Shanghai'  # 时区改为上海
 
 USE_TZ = False  # 不使用国际时间
+```
 
 
 
 
 ### 新建超级用户
+
 manage下
 
 manage.py@MxOnline > createsuperuser
@@ -428,8 +484,10 @@ manage.py@MxOnline > createsuperuser
 
 
 ### 将users_userprofile表注册到auth_group（组）中
+
 在MxOnline\apps\users\admin.py下注册后台管理系统
 
+```python
 class UserProfileAdmin(admin.ModelAdmin):  # 为 UserProfile 写一个管理器
 
     pass
@@ -437,6 +495,7 @@ class UserProfileAdmin(admin.ModelAdmin):  # 为 UserProfile 写一个管理器
 admin.site.register(UserProfile, UserProfileAdmin)  # 把admin和model进行关联注册  # register(model, 管理该model的admin)
 
 model注册后可以在后台进行增删改查
+```
 
 
 
@@ -452,6 +511,7 @@ model注册后可以在后台进行增删改查
 
 
 #### 方法一：（推荐）
+
 GitHub下搜索xadmin
 
 下载xadmin源码
@@ -468,6 +528,7 @@ GitHub下搜索xadmin
 
 
 #### 方法二：
+
 cmd下
 
 pip install xadmin
@@ -477,16 +538,20 @@ pip install xadmin
 
 ### 在settings.py中注册新建的app（xadmin）
 
+```python
 'xadmin',
 
 'crispy_forms',
+```
 
 
 
 
 ### 将默认的admin指向xadmin
+
 在urls.py中
 
+```python
 import xadmin
 
 urlpatterns = [
@@ -494,11 +559,13 @@ urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
 	
 ]
+```
 
 
 
 
 ### 建xadmin的默认的表
+
 manage下
 
 manage.py@djangotest > makemigrations  #生成数据表的py文件
@@ -509,8 +576,10 @@ manage.py@djangotest > migrate  #生成数据表
 
 
 ### 将model注册到xadmin后台管理系统中
+
 在app下新建adminx.py文件
 
+```python
 class LessonAdmin(object):
 
     list_display = ["course", "name", "add_time"]  # 设置要在后台显示的字段
@@ -521,13 +590,16 @@ class LessonAdmin(object):
 
 	
 xadmin.site.register(Course, CourseAdmin)  # 把admin和model进行关联注册  # register(model, 管理该model的admin)
+```
 
 
 
 
 ### xadmin的全局配置
+
 可以将xadmin的全局配置写在 MxOnline\apps\users\adminx.py 里
 
+```python
 class BaseSetting(object):  # xadmin的全局配置
 
     enable_themes = True  # 使用xadmin的主题功能
@@ -547,45 +619,77 @@ class GlobalSettings(object):
 xadmin.site.register(views.BaseAdminView, BaseSetting)  # 注册BaseSetting
 
 xadmin.site.register(views.CommAdminView, GlobalSettings)# 注册GlobalSettings
+```
 
 
 
 
 ### 设置app在后台管理系统中的显示名称
+
 #### 在app下的apps.py模块下
+
+```python
 class OperationConfig(AppConfig):
 
     name = 'operation'
 	
     verbose_name = u"用户操作"
+```
 
 #### 在app下的__init__.py模块下配置
+
+```python
 default_app_config = "operation.apps.OperationConfig"
+```
 
 
 
 
-## 前台
+## 用户的登录和注册
 
 
 
 
-##
+### 拷贝index.html文件到templates文件夹下
 
 
 
 
-##
+### 在工程目录下新建一个文件夹static用于存放静态文件（css、js、img等）
 
 
 
 
-##
+### 在urls.py中配置处理静态文件
+
+```python
+from django.conf.urls import url
+from django.contrib import admin
+from django.views.generic import TemplateView
+import xadmin
+
+urlpatterns = [
+    url(r'^xadmin/', xadmin.site.urls),
+    url('^$', TemplateView.as_view(template_name="index.html"), name="index")  # TemplateView的as_view()方法会把template转化为view
+]
+```
 
 
 
 
-##
+### 在settings.py中配置static文件路径
+
+```python
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static")
+)
+```
+
+
+
+
+### 
 
 
 
