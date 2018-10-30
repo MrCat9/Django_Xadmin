@@ -689,27 +689,37 @@ STATICFILES_DIRS = (
 
 
 
-### 修改index.html中静态文件的引用
+### 修改index.html中静态文件的引用路径
+
+（见 MxOnline\templates\index.html）
 
 
 
 
-##
+### 将登录的html文件（login.html）拷贝到templates文件夹下
 
 
 
 
-##
+### 修改login.html中静态文件的引用路径
 
 
 
 
-##
+### 配置urls.py  跳转到login页面
+
+```python
+    url('^login/$', TemplateView.as_view(template_name="login.html"), name="login"),  # TemplateView的as_view()方法会把template转化为view
+```
 
 
 
 
-##
+### 配置index.html，使能从index.html跳转到login页面
+
+```html
+                        <a style="color:white" class="fr loginbtn" href="/login/">登录</a>
+```
 
 
 
