@@ -709,7 +709,8 @@ STATICFILES_DIRS = (
 ### 配置urls.py  跳转到login页面
 
 ```python
-    url('^login/$', TemplateView.as_view(template_name="login.html"), name="login"),  # TemplateView的as_view()方法会把template转化为view
+    url('^login/$', TemplateView.as_view(template_name="login.html"), name="login"),
+	# TemplateView的as_view()方法会把template转化为view，这样就不需要自己写后台的view
 ```
 
 
@@ -720,6 +721,155 @@ STATICFILES_DIRS = (
 ```html
                         <a style="color:white" class="fr loginbtn" href="/login/">登录</a>
 ```
+
+
+
+
+### 在 MxOnline\apps\users\views.py 下写后台逻辑
+
+
+
+
+### 在 MxOnline\MxOnline\urls.py 下配置login的url
+
+```python
+    url(r'^login/$', login, name="login"),  # login不能加括号login()，加括号的话就是调用函数，不加的话只是一个句柄，指向函数login
+```
+
+
+
+
+### django有保护机制，post表单的时候要带上csrf，否则会报403错误
+
+在 MxOnline\templates\login.html 下
+
+```html
+                <form action="/login/" method="post" autocomplete="off">
+				……
+				……
+				……
+                {% csrf_token %}
+                </form>
+```
+
+
+
+
+### 在 MxOnline\templates\index.html 下做判断，使得登录后显示用户头像，没登录显示“登录”，“注册”按钮
+
+```html
+            {% if request.user.is_authenticated %}
+                <div class="top"...>
+				...
+				...
+                {% else %}
+                <div class="top"...>
+				...
+				...
+            {% endif %}
+```
+
+
+
+
+### django默认通过用户名和密码来登录，要用邮箱登录可以：
+
+
+
+
+#### 在settings.py中配置
+
+```python
+AUTHENTICATION_BACKENDS = (  # django默认通过用户名和密码来登录，要用邮箱登录可以在settings.py中配置
+    'users.views.CustomBackend',  # 指明函数
+)
+```
+
+
+
+
+#### 在 MxOnline\apps\users\views.py 下定义
+
+```python
+class CustomBackend(ModelBackend):
+    def authenticate(self, username=None, password=None, **kwargs):
+        try:
+            user = UserProfile.objects.get(Q(username=username)|Q(email=username))  # 先用username查  # get()方法只会取出一个，当有多个时，报错
+            # user = UserProfile.objects.get(Q(username=username)|Q(email=username), password=password)  # username=username或email=username  并password=password
+            if user.check_password(password):  # 检查密码是否正确
+                return user
+        except Exception as e:
+            return None
+```
+
+
+
+
+#### 这样在 MxOnline\apps\users\views.py 下的user_login(request)方法中的authenticate就会调用 CustomBackend 下自定义的authenticate
+
+
+
+
+### 登录失败时，在login.html页面上显示错误信息：
+
+
+
+
+#### 在 MxOnline\apps\users\views.py 下的 user_login(request) 方法中，用 render() 方法向前端传递错误信息
+
+
+
+
+#### 在 MxOnline\templates\login.html 下配置
+
+```html
+                    <div class="error btns login-form-tips" id="jsLoginTips">{{ msg }}</div>
+```
+
+
+
+
+### 用form实现登录
+
+
+
+
+##
+
+
+
+
+##
+
+
+
+
+##
+
+
+
+
+##
+
+
+
+
+##
+
+
+
+
+##
+
+
+
+
+##
+
+
+
+
+##
 
 
 
