@@ -817,6 +817,10 @@ class CustomBackend(ModelBackend):
 
 #### 在 MxOnline\apps\users\views.py 下的 user_login(request) 方法中，用 render() 方法向前端传递错误信息
 
+```python
+            return render(request, "login.html", {"msg": "用户名或密码错误！"})
+```
+
 
 
 
@@ -829,32 +833,95 @@ class CustomBackend(ModelBackend):
 
 
 
+### 把 MxOnline\apps\users\views.py 里的def改写成class 基于类的书写 ：
+
+
+
+
+#### MxOnline\apps\users\views.py 下
+
+```python
+class LoginView(View):
+    ···
+	···
+
+```
+
+
+
+
+#### 在 MxOnline\MxOnline\urls.py 下
+
+```python
+from users.views import LoginView
+
+urlpatterns = [
+    url(r'^xadmin/', xadmin.site.urls),
+
+    url('^$', TemplateView.as_view(template_name="index.html"), name="index"),  # TemplateView的as_view()方法会把template转化为view，这样就不需要自己写后台的view
+    # url(r'^login/$', user_login, name="login"),  # login不能加括号login()，加括号的话就是调用函数，不加的话只是一个句柄，指向函数login
+    url(r'^login/$', LoginView.as_view(), name="login"),
+
+    url(r'^logout/$', user_logout, name="logout"),
+]
+```
+
+
+
+
 ### 用form实现登录
 
-
-
-
-##
-
-
-
-
-##
+form  对用户传来的数据进行预处理
 
 
 
 
-##
+#### 在 MxOnline\apps\users 下新建 forms.py  用来放form定义
+
+```python
+class LoginForm(forms.Form):
+    username = forms.CharField(required=True)  # required=True 必填字段，不填报错
+    password = forms.CharField(required=True, min_length=5)
+    # password = forms.CharField(required=True, max_length=5, min_length=1)
+```
 
 
 
 
-##
+#### 在 MxOnline\apps\users\views.py 中应用forms
+
+```python
+from .forms import LoginForm
+
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():  # 如果form验证成功，再用数据库进行验证
+            ···
+			···
+```
 
 
 
 
-##
+#### 账号或者密码出错时加红框  在template里对form进行操作
+
+在 MxOnline\templates\login.html 下
+
+```html
+                    <div class="form-group marb20 {% if login_form.errors.username %}errorput{% endif %}">
+
+                    <div class="form-group marb8 {% if login_form.errors.password %}errorput{% endif %}">
+```
+
+
+
+
+#### 将form提供的错误信息显示到网页上  在template里对form进行操作
+
+在 MxOnline\templates\login.html 下
+
+```html
+                    <div class="error btns login-form-tips" id="jsLoginTips">{% for key,error in login_form.errors.items %}{{ key }}:{{ error }}{% endfor %}{{ msg }}</div>
+```
 
 
 
