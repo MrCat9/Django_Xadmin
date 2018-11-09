@@ -843,8 +843,7 @@ class CustomBackend(ModelBackend):
 ```python
 class LoginView(View):
     ···
-	···
-
+    ···
 ```
 
 
@@ -895,8 +894,8 @@ from .forms import LoginForm
 
         login_form = LoginForm(request.POST)
         if login_form.is_valid():  # 如果form验证成功，再用数据库进行验证
-            ···
-			···
+        ···
+	···
 ```
 
 
