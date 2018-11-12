@@ -148,7 +148,7 @@ Django有保护机制，需要csrf_token才能提交表单
         message = request.POST.get("message", "")
         address = request.POST.get("address", "")
         email = request.POST.get("email", "")
-		""""""
+        """"""
 
         """把数据存入数据库"""
         user_message = UserMessage()
@@ -168,7 +168,7 @@ Django有保护机制，需要csrf_token才能提交表单
     for message in all_messages:
         message.delete()
 ```
-		
+        
 
 
 
@@ -208,11 +208,11 @@ def getform(request):
 urlpatterns = [
 
     url(r'^admin/', admin.site.urls),
-	
+    
     url(r'^form/$', getform, name='go_form'),  # $是结束符  # 在html中用url的name的话，便于维护
-	
+    
     url(r'^form_go/$', getform, name='go_form')  # http://127.0.0.1:8000/form/ 和 http://127.0.0.1:8000/form_go/  访问同一个页面
-	
+    
 ]
 ```
 
@@ -557,7 +557,7 @@ import xadmin
 urlpatterns = [
 
     url(r'^xadmin/', xadmin.site.urls),
-	
+    
 ]
 ```
 
@@ -583,12 +583,12 @@ manage.py@djangotest > migrate  #生成数据表
 class LessonAdmin(object):
 
     list_display = ["course", "name", "add_time"]  # 设置要在后台显示的字段
-	
+    
     search_fields = ["course__name", "name"]  # 设置可以做搜索的字段  # 搜索的字段不能是外键类型(course)的，所以用外键类型(course)下的char类型(name)来做为搜索的字段
     
-	list_filter = ["course__name", "name", "add_time"]  # 设置可以做过滤分类的字段  # course是外键  # course__name 用外键(course)的name做过滤分类
+    list_filter = ["course__name", "name", "add_time"]  # 设置可以做过滤分类的字段  # course是外键  # course__name 用外键(course)的name做过滤分类
 
-	
+    
 xadmin.site.register(Course, CourseAdmin)  # 把admin和model进行关联注册  # register(model, 管理该model的admin)
 ```
 
@@ -603,19 +603,19 @@ xadmin.site.register(Course, CourseAdmin)  # 把admin和model进行关联注册 
 class BaseSetting(object):  # xadmin的全局配置
 
     enable_themes = True  # 使用xadmin的主题功能
-	
+    
     use_bootswatch = True
 
-	
+    
 class GlobalSettings(object):
 
     site_title = "慕学后台管理系统"
-	
+    
     site_footer = "慕学在线网"
-	
+    
     menu_style = "accordion"
 
-	
+    
 xadmin.site.register(views.BaseAdminView, BaseSetting)  # 注册BaseSetting
 
 xadmin.site.register(views.CommAdminView, GlobalSettings)# 注册GlobalSettings
@@ -632,7 +632,7 @@ xadmin.site.register(views.CommAdminView, GlobalSettings)# 注册GlobalSettings
 class OperationConfig(AppConfig):
 
     name = 'operation'
-	
+    
     verbose_name = u"用户操作"
 ```
 
@@ -645,7 +645,7 @@ default_app_config = "operation.apps.OperationConfig"
 
 
 
-## 用户的登录和注册
+## 用户的登录
 
 
 
@@ -710,7 +710,7 @@ STATICFILES_DIRS = (
 
 ```python
     url('^login/$', TemplateView.as_view(template_name="login.html"), name="login"),
-	# TemplateView的as_view()方法会把template转化为view，这样就不需要自己写后台的view
+    # TemplateView的as_view()方法会把template转化为view，这样就不需要自己写后台的view
 ```
 
 
@@ -745,9 +745,9 @@ STATICFILES_DIRS = (
 
 ```html
                 <form action="/login/" method="post" autocomplete="off">
-				……
-				……
-				……
+                ···
+                ···
+                ···
                 {% csrf_token %}
                 </form>
 ```
@@ -760,12 +760,12 @@ STATICFILES_DIRS = (
 ```html
             {% if request.user.is_authenticated %}
                 <div class="top"...>
-				...
-				...
+                ...
+                ...
                 {% else %}
                 <div class="top"...>
-				...
-				...
+                ...
+                ...
             {% endif %}
 ```
 
@@ -844,6 +844,7 @@ class CustomBackend(ModelBackend):
 class LoginView(View):
     ···
     ···
+
 ```
 
 
@@ -894,8 +895,8 @@ from .forms import LoginForm
 
         login_form = LoginForm(request.POST)
         if login_form.is_valid():  # 如果form验证成功，再用数据库进行验证
-        ···
-	···
+            ···
+            ···
 ```
 
 
@@ -925,7 +926,137 @@ from .forms import LoginForm
 
 
 
-##
+### session和cookie
+
+见 https://github.com/MrCat9/Python_Scrapy-Redis_elasticsearch_django/blob/master/scrapy%E7%88%AC%E5%8F%96%E7%9F%A5%E4%B9%8E1_cookie_session.py
+
+
+
+
+## 用户的注册
+
+
+
+
+### 拷贝 register.html 文件到 templates 文件夹下
+
+
+
+
+### 在 MxOnline\MxOnline\urls.py 下配置 register.html
+
+```python
+    url(r'^register/$', RegisterView.as_view(), name="register"),
+```
+
+
+
+
+### 在 MxOnline\apps\users\views.py 下写后台逻辑
+
+```python
+    class RegisterView(View):
+        ···
+        ···
+```
+
+
+
+
+### 修改 register.html 中静态文件的引用路径
+
+```html
+{% load staticfiles %}
+···
+···
+    <link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+···
+···
+```
+
+
+
+
+### 在 MxOnline\templates\index.html 下配置，使能够从 index 页面跳转到register页面
+
+```html
+                        <a style="color:white" class="fr registerbtn" href="{% url 'register' %}">注册</a>
+```
+
+
+
+
+### 在 MxOnline\templates\login.html 下配置，使能够从 login 页面跳转到register页面
+
+```html
+                <li><a href="{% url 'register' %}">[注册]</a></li>
+                ···
+                ···
+                <p class="form-p">没有慕学在线网帐号？<a href="{% url 'register' %}">[立即注册]</a></p>
+```
+
+
+
+
+### 用 django 的第三方插件 https://github.com/mbi/django-simple-captcha 做验证码
+
+在cmd下安装：
+
+λ pip install django-simple-captcha==0.4.6
+
+使用方法：
+
+https://django-simple-captcha.readthedocs.io/en/latest/usage.html#installation
+
+
+
+
+### 在 MxOnline\apps\users\forms.py 下定义 RegisterForm
+
+```python
+from django import forms
+from captcha.fields import CaptchaField
+
+class RegisterForm(forms.Form):
+    email = forms.EmailField(required=True)
+    password = forms.CharField(required=True, min_length=5)
+    captcha = CaptchaField()
+```
+
+
+
+
+### 完善 MxOnline\apps\users\views.py 下的后台逻辑
+
+```python
+class RegisterView(View):
+    def get(self, request):
+        register_form = RegisterForm()
+        return render(request, "register.html", {'register_form': register_form})
+```
+
+
+
+
+### 在 MxOnline\templates\register.html 配置使用 register_form
+
+```html
+                        <div class="form-group marb8 captcha1 ">
+                            <label>验&nbsp;证&nbsp;码</label>
+                            {{ register_form.captcha }}
+                        </div>
+```
+
+{{ register_form.captcha }} 会生成一段 html 代码
+
+```html
+<img src="/captcha/image/574914ff49afe8846c0bfde07a094e4a56a7910c/" alt="captcha" class="captcha" /> <input id="id_captcha_0" name="captcha_0" type="hidden" value="574914ff49afe8846c0bfde07a094e4a56a7910c" /> <input autocomplete="off" id="id_captcha_1" name="captcha_1" type="text" />
+```
+
+574914ff49afe8846c0bfde07a094e4a56a7910c 和 用户输入的验证码
+
+将传到后台数据库验证验证码是否填写正确
 
 
 
@@ -990,50 +1121,62 @@ from .forms import LoginForm
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
 
+##
 
 
 
