@@ -1021,7 +1021,7 @@ from captcha.fields import CaptchaField
 class RegisterForm(forms.Form):
     email = forms.EmailField(required=True)
     password = forms.CharField(required=True, min_length=5)
-    captcha = CaptchaField()
+    captcha = CaptchaField(error_messages={"invalid": u"验证码错误"})  # 自定义要抛出的错误信息
 ```
 
 
@@ -1070,4 +1070,41 @@ ID       challenge   response    hashkey                                        
 
 
 
-##
+### 完善 MxOnline\apps\users\views.py 下的后台逻辑  用于注册时提交表单的post
+
+```python
+class RegisterView(View):
+    def get(self, request):
+        register_form = RegisterForm()
+        return render(request, "register.html", {'register_form': register_form})
+    def post(self, request):
+        ···
+        ···
+```
+
+
+
+
+#### post 中用到的发送邮箱
+
+
+
+
+### 配置 MxOnline\templates\register.html post表单到 /register/
+
+```html
+                    <form id="email_register_form" method="post" action="{% url 'register' %}" autocomplete="off">
+```
+
+
+
+
+### {% csrf_token %}  <!-- Django有保护机制，需要csrf_token才能提交表单 -->
+
+```html
+                    {% csrf_token %}
+```
+
+
+
+
