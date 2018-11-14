@@ -1085,7 +1085,77 @@ class RegisterView(View):
 
 
 
-#### post 中用到的发送邮箱
+### post 中用到的发送邮箱 写在 MxOnline\apps\utils\email_send.py 下
+
+
+
+
+### 在 MxOnline\MxOnline\settings.py 下配置邮件的发送者
+
+```python
+EMAIL_HOST = "smtp.sina.com"
+# 查找邮箱的host
+# 登录邮箱后 --> 设置 --> SMTP服务 --> SMTP服务器
+EMAIL_PORT = 25
+EMAIL_HOST_USER = "···"
+EMAIL_HOST_PASSWORD = "···"
+EMAIL_USE_TLS = False
+EMAIL_FROM = "···"
+```
+
+
+
+
+### 处理激活链接
+
+
+
+
+#### 在 MxOnline\MxOnline\urls.py 配置url
+
+```python
+    # 处理用户通过邮箱激活注册的账号
+    url(r'^active/(?P<active_code>.*)/$'),  # (?P<active_code>.*) 提取url的部分， .* 为正则表达式，匹配出来的值放到 active_code
+```
+
+
+
+
+#### 在 MxOnline\apps\users\views.py 下写点击激链接后的处理
+
+```python
+class ActiveUserView(View):
+    def get(self, request, active_code):
+    ···
+    ···
+```
+
+
+
+
+### 将注册时的报错信息传给 register.html
+
+```html
+                        <div class="error btns" id="jsEmailTips">{% for key,error in register_form.errors.items %}{{ error }}{% endfor %}</div>
+```
+
+
+
+
+### 注册时报错的话做标红 register.html
+
+```html
+                        <div class="form-group marb20 {% if register_form.errors.email %}errorput{% endif %}">
+```
+
+
+
+
+### 回填用户注册时填写的值
+
+```html
+                            <input  type="text" id="id_email" name="email" value="{{ register_form.email.value }}" placeholder="请输入您的邮箱地址" />
+```
 
 
 
