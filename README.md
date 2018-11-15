@@ -1121,7 +1121,7 @@ EMAIL_FROM = "···"
 
 
 
-#### 在 MxOnline\apps\users\views.py 下写点击激链接后的处理
+#### 在 MxOnline\apps\users\views.py 下写点击激活链接后的处理
 
 ```python
 class ActiveUserView(View):
@@ -1179,6 +1179,185 @@ class ActiveUserView(View):
 
 
 ## 用户找回密码
+
+
+
+
+### 将 forgetpwd.html 拷贝到 MxOnline\templates\ 下
+
+
+
+
+### 在 MxOnline\MxOnline\urls.py 下配置忘记密码的url
+
+```python
+    url(r'^forget/$', ForgetPwdView.as_view(), name="forget_pwd"),
+```
+
+
+
+
+### 在 MxOnline\apps\users\views.py 下写忘记密码的后台逻辑
+
+```python
+class ForgetPwdView(View):
+    def get(self, request):
+    ···
+    ···
+```
+
+
+
+
+### 在 MxOnline\templates\login.html 下配置url，使能从 login.html 跳转到 forgetpwd.html
+
+```html
+                        <a class="fr" href="{% url 'forget_pwd' %}">忘记密码？</a>
+```
+
+
+
+
+### 修改 forgetpwd.html 中的静态文件路径
+
+```html
+{% load staticfiles %}
+···
+···
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+···
+···
+```
+
+
+
+
+### 在 MxOnline\apps\users\forms.py 下定义form
+
+```python
+class ForgetForm(forms.Form):
+    email = forms.EmailField(required=True)  # 要与html中input的name一样
+    captcha = CaptchaField(error_messages={"invalid": u"验证码错误"})  # 自定义要抛出的错误信息
+```
+
+
+
+
+### 在 MxOnline\apps\users\views.py 下使用form
+
+```python
+class ForgetPwdView(View):
+    def get(self, request):
+        forget_form = ForgetForm()
+        return render(request, "forgetpwd.html", {"forget_form": forget_form})
+```
+
+
+
+
+### 在 MxOnline\templates\forgetpwd.html 下配置使用form，生成验证码
+
+```html
+                        {{ forget_form.captcha }}
+```
+
+
+
+
+### 在 MxOnline\apps\users\views.py 下完善忘记密码的后台逻辑 post
+
+```python
+class ForgetPwdView(View):
+    def get(self, request):
+        forget_form = ForgetForm()
+        return render(request, "forgetpwd.html", {"forget_form": forget_form})
+
+    def post(self,request):
+        forget_form = ForgetForm(request.POST)
+
+        if forget_form.is_valid():
+
+            # <div class="form-group marb20 ">
+            #     <label>帐&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+            #     <input type="text" id="account" name="email" value="" placeholder="邮箱" />
+            # </div>
+
+            #             get()方法中取的要与html中的name一致
+            email = request.POST.get("email", "")
+            ···
+            ···
+```
+
+
+
+
+### post 中发送邮箱的 send_register_email() 方法写在 MxOnline\apps\utils\email_send.py 下
+
+
+
+
+### 新建html页面 MxOnline\templates\send_success.html 用于显示已经成功发送密码重置邮件
+
+
+
+
+### 在 MxOnline\templates\forgetpwd.html 下配置post到 /forget/ 
+
+```html
+                <form id="jsFindPwdForm" method="post" action="{% url 'forget_pwd' %}" autocomplete="off">
+```
+
+
+
+
+### 在 MxOnline\templates\forgetpwd.html 下配置post的时候带上csrf
+
+```html
+                {% csrf_token %}
+```
+
+
+
+
+### 在 MxOnline\templates\forgetpwd.html 下配置显示form的错误信息
+
+```html
+                    <div class="error btns" id="jsForgetTips">{% for key,error in forget_form.errors.items %}{{ error }}{% endfor %}{{ msg }}</div>
+```
+
+
+
+
+### 在 MxOnline\templates\forgetpwd.html 下配置给错误的地方标红
+
+```html
+                    <div class="form-group marb20 {% if forget_form.errors.email %}errorput{% endif %}">
+```
+
+
+
+
+### 在 MxOnline\templates\forgetpwd.html 下配置回填 email
+
+```html
+                    <div class="form-group marb20 {% if forget_form.errors.email %}errorput{% endif %}">
+```
+
+
+
+
+### 处理密码重置链接
+
+
+
+
+#### 在 MxOnline\MxOnline\urls.py 配置url
+
+
+
+
+#### 在 MxOnline\apps\users\views.py 下写点击密码重置链接后的处理
 
 
 
