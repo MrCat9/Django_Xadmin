@@ -1357,8 +1357,63 @@ class ForgetPwdView(View):
 
 
 
-#### 在 MxOnline\apps\users\views.py 下写点击密码重置链接后的处理
+#### 在 MxOnline\apps\users\views.py 下写点击密码重置链接后的处理  ResetView
+
+跳转到重置密码页面
+
+```python
+class ResetView(View):
+    def get(self, request, reset_code):
+        ···
+        ···
+```
 
 
 
 
+#### 在 MxOnline\templates\password_reset.html 下配置
+
+获取 MxOnline\apps\users\views.py 中传过来的email，以确定是哪个用户修改密码
+
+```html
+                <input type="hidden" name="email" value="{{ email }}">
+```
+
+
+点击提交新密码，post 到 modify_pwd
+
+```html
+        <form id="reset_password_form" action="{% url 'modify_pwd' %}" method="post">
+```
+
+csrf_token
+
+```html
+            </ul>
+            {% csrf_token %}
+        </form>
+```
+
+
+
+
+#### 在 MxOnline\apps\users\forms.py 下写 form  ModifyPwdForm
+
+
+
+
+#### 在 MxOnline\apps\users\views.py 下写点击提交新密码后的处理  ResetView
+
+```python
+class ModifyPwdView(View):
+    def post(self, request):
+        modify_form = ModifyPwdForm(request.POST)
+        if modify_form.is_valid():
+        ···
+        ···
+```
+
+
+
+
+##
