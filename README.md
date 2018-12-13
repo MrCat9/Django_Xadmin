@@ -1416,4 +1416,392 @@ class ModifyPwdView(View):
 
 
 
+## 授课机构
+
+
+
+
+### django templates模板继承
+
+
+
+
+#### 新建 MxOnline\templates\base.html
+
+变动的地方用block包起来
+```html
+	<title>{% block title %}慕学在线首页{% endblock %}</title>
+```
+
+
+
+
+#### 新建 MxOnline\templates\org-list.html  使用 {% extends 'base.html' %}
+
+
+
+
+### 机构列表页
+
+
+
+
+#### 在xadmin下新增数据
+
+城市  课程机构（上传logo）  
+
+
+
+
+##### 上传文件目录配置 media
+
+
+
+
+###### 新建 MxOnline\media 文件夹
+
+
+
+
+###### 在 MxOnline\MxOnline\settings.py 下配置上传文件的存放路径
+
+```python
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+```
+
+
+
+
+#### 在 MxOnline\MxOnline\urls.py 下配置url，转到机构列表页  org_list
+
+
+
+
+#### 在 MxOnline\apps\organization\views.py 下写跳转到机构列表页后的逻辑
+
+
+
+
+#### 在 MxOnline\templates\org-list.html 下调用view中传过来的数据
+
+
+```html
+		<div class="all">共<span class="key">{{ org_nums }}</span>家</div>
+```
+
+```html
+                                {% for city in all_citys %}
+                                    <a href="?city=1&ct="><span class="">{{ city.name }}</span></a>
+                                {% endfor %}
+```
+
+```html
+            {% for course_org in all_orgs %}
+                <dl class="des difdes">
+                    <dt>
+                        <a href="org-detail-homepage.html">
+                            <img width="200" height="120" class="scrollLoading" data-url="{{ MEDIA_URL }}{{ course_org.image }}"/>
+                            ···
+                            ···
+```
+
+
+
+
+##### 使用{{ MEDIA_URL }}的话要在settings.py下配置 'django.core.context_processors.media'
+
+```python
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        ,
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.media',
+            ],
+        },
+    },
+]
+```
+
+
+
+
+##### 要显示课程机构的logo要在 urls.py 下配置
+
+```python
+    # 配置上传文件的访问处理函数
+    url(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT})
+```
+
+
+
+
+### 分页功能
+
+使用开源库 pure-pagination
+https://github.com/jamespacileo/django-pure-pagination
+
+
+
+
+#### pip install django-pure-pagination
+
+
+
+
+#### 使用 pure-pagination
+
+见 https://github.com/jamespacileo/django-pure-pagination
+
+见 MxOnline\templates\org-list.html
+
+
+
+
+### 筛选功能
+
+
+
+
+#### 根据城市筛选
+
+
+
+
+##### 点击城市后，前端将回传城市的id
+
+MxOnline\templates\org-list.html
+
+```html
+                                {% for city in all_citys %}
+                                    <a href="?city={{ city.id }}"><span class="">{{ city.name }}</span></a>
+                                {% endfor %}
+```
+
+
+
+
+##### 后端接收城市id
+
+MxOnline\apps\organization\views.py
+
+```python
+        # 取出筛选城市
+        city_id = request.GET.get('city', "")
+        if city_id:
+            all_orgs = all_orgs.filter(city_id=int(city_id))
+```
+
+
+
+
+##### 让选中的城市显示为被选中状态
+
+```html
+                        <a href="?ct={{ category }}"><span class="{% ifequal city_id '' %}active2{% endifequal %}">全部</span></a>
+                                {% for city in all_citys %}
+                                    <a href="?city={{ city.id }}&ct={{ category }}"><span class="{% ifequal city_id city.id|stringformat:"i" %}active2{% endifequal %}">{{ city.name }}</span></a>
+                                {% endfor %}
+```
+
+
+
+
+#### 根据类别筛选
+
+
+
+
+### 授课机构排名功能
+
+
+
+
+#### 根据点击量
+
+MxOnline\apps\organization\views.py
+
+```python
+        # 课程机构按照点击量排名
+        hot_orgs = all_orgs.order_by("-click_nums")[:3]  # -倒序排列  # 取前三
+```
+
+
+
+
+#### 显示排名在网页上
+
+MxOnline\templates\org-list.html
+
+```html
+            {% for curent_org in hot_orgs %}
+                <dl class="des">
+                    <dt class="num fl">{{ forloop.counter }}</dt>  {# 排名 #}
+                    <dd>
+                        <a href="/company/2/"><h1>{{ curent_org.name }}</h1></a>
+                        <p>{{ curent_org.address }}</p>
+                    </dd>
+                </dl>
+            {% endfor %}
+```
+
+
+
+
+### 排序功能
+
+
+
+
+#### 变更数据库-->变更model
+
+修改 models.py
+
+makemigrations organization
+
+migrate organization
+
+
+
+
+#### 前端回传排序方式
+
+MxOnline\templates\org-list.html
+
+```html
+					<li class=""><a href="?sort=students&ct=&city=">学习人数 &#8595;</a></li>
+					<li class=""><a href="?sort=courses&ct=&city=">课程数 &#8595;</a></li>
+```
+
+
+
+
+#### 后端接收排序方式
+
+MxOnline\apps\organization\views.py
+
+```python
+        # 排序
+        sort = request.GET.get("sort", "")
+        if sort:
+            if sort == "students":
+                all_orgs = all_orgs.order_by("-students")
+            elif sort == "courses":
+                all_orgs = all_orgs.order_by("-course_nums")
+```
+
+
+
+
+#### 展示排序结果
+
+MxOnline\templates\org-list.html
+
+```html
+					<li class="{% if sort == '' %}active{% endif %}"><a href="?ct={{ category }}&city={{ city_id }}">全部</a> </li>
+					<li class="{% if sort == 'students' %}active{% endif %}"><a href="?sort=students&ct={{ category }}&city={{ city_id }}">学习人数 &#8595;</a></li>
+					<li class="{% if sort == 'courses' %}active{% endif %}"><a href="?sort=students&ct={{ category }}&city={{ city_id }}">课程数 &#8595;</a></li>
+```
+
+
+
+
+### 用户提交“我要学习”功能 modelform表单提交
+
+
+
+
+#### 新建 MxOnline\apps\organization\forms.py
+
+```python
+class AnotherUserForm(forms.ModelForm):  # ModelForm
+
+    # my_filed = forms.CharField()  # ModelForm 可新增字段
+
+    class Meta:
+        model = UserAsk  # 指明该 ModelForm 是由哪个 Model 转换来的
+        fields = ['name', 'mobile', 'course_name']  # 挑选 Model 中的部分字段做转换
+```
+
+
+
+
+#### 新建 MxOnline\apps\organization\urls.py
+
+存放关于课程机构的url配置
+
+
+
+
+#### 在 MxOnline\MxOnline\urls.py 下
+
+整理课程机构的url
+
+用 include 连接 MxOnline\apps\organization\urls.py 
+
+```python
+    # 课程机构url配置
+    url(r'^org/', include('organization.urls', namespace="org")),  # namespace 命名空间，这样即使organization.urls中有name和urls下的name相同，也不会冲突
+```
+
+
+
+
+##### 在 MxOnline\templates\base.html 下使用 namespace
+
+```html
+							<li class="active" ><a href="{% url 'org:org_list' %}">授课机构</a></li>
+```
+
+
+
+
+#### 使用 modelform 验证表单
+
+
+
+
+##### 在 MxOnline\apps\organization\urls.py 下配置提交表单的 url
+
+```python
+    # 点击“我要学习”的提交
+    url(r'^ask_add/$', AddUserAskView.as_view(), name="ask_add"),
+```
+
+
+
+
+##### 在 MxOnline\apps\organization\views.py 下写点击提交表单后的后台逻辑
+
+使用 modelform 验证表单
+
+```python
+class AddUserAskView(View):
+    """
+    用户添加咨询
+    """
+    def post(self, request):
+        userask_form = UserAskForm(request.POST)
+        if userask_form.is_valid():
+            user_ask = userask_form.save(commit=True)  # ModelForm 可以选择直接保存到数据库
+            return HttpResponse("{'status': 'success'}", content_type='application/json')  # 返回json
+        else:
+            return HttpResponse("{'status': 'fail', 'msg': {0}}".format(userask_form.errors), content_type='application/json')  # 返回json
+```
+
+
+
+
 ##
+
+
+
+
