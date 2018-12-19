@@ -1416,7 +1416,7 @@ class ModifyPwdView(View):
 
 
 
-## 授课机构
+## 授课机构列表页功能
 
 
 
@@ -1441,7 +1441,7 @@ class ModifyPwdView(View):
 
 
 
-### 机构列表页
+### 机构列表页展示
 
 
 
@@ -1500,7 +1500,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
             {% for course_org in all_orgs %}
                 <dl class="des difdes">
                     <dt>
-                        <a href="org-detail-homepage.html">
+                        <a href="{% url 'org:org_home' course_org.id %}">
                             <img width="200" height="120" class="scrollLoading" data-url="{{ MEDIA_URL }}{{ course_org.image }}"/>
                             ···
                             ···
@@ -1714,7 +1714,7 @@ MxOnline\templates\org-list.html
 
 
 
-### 用户提交“我要学习”功能 modelform表单提交
+### 用户提交“我要学习”功能  modelform表单提交
 
 
 
@@ -1729,6 +1729,26 @@ class UserAskForm(forms.ModelForm):  # ModelForm
     class Meta:
         model = UserAsk  # 指明该 ModelForm 是由哪个 Model 转换来的
         fields = ['name', 'mobile', 'course_name']  # 挑选 Model 中的部分字段做转换
+
+    '''
+    form中的变量名要和html中的name一致
+                        <input type="text" name="course_name" id="companyAddress" placeholder="课程名" maxlength="50" />
+    '''
+
+    def clean_mobile(self):  # 自定义对mobile做表单验证  # 必须以 clean 开头命名方法
+        """
+        验证手机号码是否合法
+        """
+
+        # 取出form中的mobile
+        mobile = self.cleaned_data['mobile']
+
+        REGEX_MOBILE = '^1[358]\d{9}$|^147\d{8}$|^176\d{8}$'  # 正则
+        p = re.compile(REGEX_MOBILE)
+        if p.match(mobile):
+            return mobile
+        else:  # 不匹配，抛出异常，返回错误信息
+            raise forms.ValidationError(u"手机号码非法", code="mobile_invalid")
 ```
 
 
@@ -1764,7 +1784,7 @@ class UserAskForm(forms.ModelForm):  # ModelForm
 
 
 
-#### 使用 modelform 验证表单
+#### 使用 modelform 验证表单，提交表单
 
 
 
@@ -1829,6 +1849,243 @@ MxOnline\templates\org-list.html 中的js
 
 </script>
 ```
+
+
+
+
+## 机构详情页 机构首页
+
+
+
+
+### 在xadmin下新增数据
+
+
+
+
+#### 重载str方法  MxOnline\apps\organization\models.py
+
+```python
+    def __str__(self):  # 重载str方法
+        return self.name
+```
+
+
+
+
+### 给课程新增所属机构的外键
+
+
+
+
+#### 修改models MxOnline\apps\courses\models.py
+
+```python
+class Course(models.Model):
+    course_org = models.ForeignKey(CourseOrg, verbose_name=u"课程机构", null=True, blank=True)
+    ···
+    ···
+```
+
+
+
+
+#### 生成数据表
+
+```
+makemigrations courses
+
+migrate courses
+```
+
+
+
+
+### 拷贝html到 MxOnline\templates 下
+
+
+
+
+### 在 MxOnline\templates 下新建 org_base.html
+
+
+
+
+### 使用 org_base.html 完成 MxOnline\templates\org-detail-homepage.html
+
+```html
+{% extends 'org_base.html' %}
+
+{% load staticfiles %}
+
+{% block custom_title %}机构首页 - 慕学网{% endblock %}
+
+{% block page_path %}机构首页{% endblock %}
+
+{% block custom_course_org_name %}{{ course_org.name }}{% endblock %}
+
+{% block right_form %}
+<div class="right companycenter layout grouping" >
+···
+<div class="right companycenter layout" >
+···
+<div class="right companycenter layout" >
+···
+{% endblock %}
+```
+
+
+
+
+### 配置url  MxOnline\apps\organization\urls.py
+
+```python
+    # 课程机构详情页  机构首页
+    url(r'^home/(?P<org_id>\d+)/$', OrgHomeView.as_view(), name="org_home"),
+```
+
+
+
+
+### 写view  MxOnline\apps\organization\views.py
+
+```python
+class OrgHomeView(View):
+    """
+    课程机构首页
+    """
+
+    def get(self, request, org_id):
+        current_page = "home"
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        # all_courses = course_org.course_set.all()[:3]  # 取出所有以 course_org 为外键的 Course  # [models下的class名]_set  # 取3个
+        all_courses = course_org.course_set.all()  # 取出所有以 course_org 为外键的 Course  # [models下的class名]_set
+        all_teachers = course_org.teacher_set.all()
+        return render(request, 'org-detail-homepage.html', {
+            "all_courses": all_courses,
+            "all_teachers": all_teachers,
+            "course_org": course_org,
+            "current_page": current_page,
+
+        })
+```
+
+
+
+
+### 在html中展示view传过来的数据  MxOnline\templates\org-detail-homepage.html
+
+显示课程
+
+```html
+            {% for course in all_courses %}
+                <div class="module1_5 box">
+                    <a href="course-detail.html"><img width="214" src="{{ MEDIA_URL }}{{ course.image }}"/></a>
+                    <div class="des">
+                        <a href="course-detail.html"><h2>{{ course.name }}</h2></a>
+                        <span class="fl">课时：<i class="key">{{ course.learn_times }}</i></span>
+                        <span class="fr">参加人数：{{ course.students }}</span>
+                    </div>
+                    <div class="bottom">
+                        <span class="fl">{{ course.course_org.name }}</span>
+                         <span class="star fr  notlogin
+                            " data-favid="13"  data-fav-type="4">
+                            {{ course.fav_nums }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+```
+
+显示教师
+
+```html
+    {% for teacher in all_teachers %}
+    <div class="diarys">
+        <div class="module5 share company-diary-box" style="padding:10px 0;">
+            <div class="left">
+                <img class="pic" src="{{ MEDIA_URL }}{{ teacher.image }}"/>
+                <p>昵称：{{ teacher.name }}</p>
+            </div>
+            <div class="right">
+                <div class="top">
+                    <div class="fl">
+                        <a href=""><h1>java开发教程</h1></a>
+                        <span>发表于：2015-10-12</span>
+                    </div>
+                </div>
+                <div class="middle" style="border-bottom:0;">课程介绍</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+```
+
+显示机构介绍
+
+```html
+    <div class="cont">&nbsp; &nbsp; <p>&nbsp; &nbsp;</p><h1 class="ue_t" label="Title center" name="tc" style="border-bottom-color:#cccccc;border-bottom-width:2px;border-bottom-style:solid;padding:0px 4px 0px 0px;text-align:center;margin:0px 0px 20px;"><span style="color:#c0504d;">[键入文档标题]</span></h1><p style="text-align:center;"><strong class="ue_t">[键入文档副标题]</strong></p><h3><span class="ue_t" style="font-family:幼圆">[标题 1]</span></h3><p class="ue_t" style="text-indent:2em;">{{ course_org.desc }}</p><p class="ue_t" style="text-indent:2em;"><img src="{% static 'media/courses/ueditor/57aa86a0000145c512000460_20161210234050_865.jpg' %}" title="" alt="57aa86a0000145c512000460.jpg"/> </p><h3><span class="ue_t" style="font-family:幼圆">[标题 2]</span></h3><p><img src="http://api.map.baidu.com/staticimage?center=116.410899,39.863624&zoom=11&width=530&height=340&markers=116.404,39.915" width="530" height="340"/> </p><p class="ue_t" style="text-indent:2em;">在“开始”选项卡上，通过从快速样式库中为所选文本选择一种外观，您可以方便地更改文档中所选文本的格式。 您还可以使用“开始”选项卡上的其他控件来直接设置文本格式。大多数控件都允许您选择是使用当前主题外观，还是使用某种直接指定的格式。</p><h3><span class="ue_t" style="font-family:幼圆">[标题 3]</span></h3><p>2016-12-10</p><p class="ue_t">对于“插入”选项卡上的库，在设计时都充分考虑了其中的项与文档整体外观的协调性。 您可以使用这些库来插入表格、页眉、页脚、列表、封面以及其他文档构建基块。 您创建的图片、图表或关系图也将与当前的文档外观协调一致。</p><p class="ue_t"><br/> </p><p><br/></p><p><br/></p><a href="/company/desc/22/"><span class="green">[查看更多]</span></a></div>
+```
+
+
+
+
+## 机构详情页 机构课程页
+
+
+
+
+### 使用 org_base.html 完成 MxOnline\templates\org-detail-course.html
+
+
+
+
+### 配置url  MxOnline\apps\organization\urls.py
+
+
+
+
+### 写view  MxOnline\apps\organization\views.py
+
+
+
+
+### 在html中展示view传过来的数据  MxOnline\templates\org-detail-course.html
+
+
+
+
+## 机构详情页 机构介绍页
+
+
+
+
+### 使用 org_base.html 完成 MxOnline\templates\org-detail-desc.html
+
+
+
+
+### 配置url  MxOnline\apps\organization\urls.py
+
+
+
+
+### 写view  MxOnline\apps\organization\views.py
+
+
+
+
+### 在html中展示view传过来的数据  MxOnline\templates\org-detail-desc.html
+
+
+
+
+## 机构详情页 机构教师页  （同上）
+
+
+
+
+## 课程机构收藏功能
 
 
 
