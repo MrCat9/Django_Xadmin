@@ -805,7 +805,7 @@ class CustomBackend(ModelBackend):
 
 
 
-#### 这样在 MxOnline\apps\users\views.py 下的user_login(request)方法中的authenticate就会调用 CustomBackend 下自定义的authenticate
+#### 这样在 MxOnline\apps\users\views.py 下的 class LoginView(View): 类中的 def post(self, request): 方法中的authenticate就会调用 CustomBackend 下自定义的authenticate
 
 
 
@@ -1722,7 +1722,7 @@ MxOnline\templates\org-list.html
 #### 新建 MxOnline\apps\organization\forms.py
 
 ```python
-class AnotherUserForm(forms.ModelForm):  # ModelForm
+class UserAskForm(forms.ModelForm):  # ModelForm
 
     # my_filed = forms.CharField()  # ModelForm 可新增字段
 
@@ -1794,13 +1794,41 @@ class AddUserAskView(View):
             user_ask = userask_form.save(commit=True)  # ModelForm 可以选择直接保存到数据库
             return HttpResponse("{'status': 'success'}", content_type='application/json')  # 返回json
         else:
-            return HttpResponse("{'status': 'fail', 'msg': {0}}".format(userask_form.errors), content_type='application/json')  # 返回json
+            # return HttpResponse('{"status": "fail", "msg": {0}}'.format(userask_form.errors), content_type='application/json')  # 返回json
+            return HttpResponse('{"status": "fail", "msg": "添加出错"}', content_type='application/json')  # 返回json  # json数据里面的引号要用双引号！！！
 ```
 
 
 
 
-##
+#### 用ajax提交表单
+
+MxOnline\templates\org-list.html 中的js
+
+```js
+<script>
+    $(function(){
+        $('#jsStayBtn').on('click', function(){
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"{% url "org:ask_add" %}",
+                data:$('#jsStayForm').serialize(),
+                async: true,
+                success: function(data) {  {# data是views.py中传过来的json #}
+                    if(data.status == 'success'){
+                        $('#jsStayForm')[0].reset();
+                        alert("提交成功")
+                    }else if(data.status == 'fail'){
+                        $('#jsCompanyTips').html(data.msg)
+                    }
+                },
+            });
+        });
+    })
+
+</script>
+```
 
 
 
