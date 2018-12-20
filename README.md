@@ -1,4 +1,4 @@
-# Django_xadmin
+# Django_Xadmin
 
 摘自 https://coding.imooc.com/class/78.html
 
