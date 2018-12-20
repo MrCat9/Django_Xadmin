@@ -30,6 +30,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTHENTICATION_BACKENDS = (  # django默认通过用户名和密码来登录，要用邮箱登录可以在settings.py中配置
+    'users.views.CustomBackend',  # 指明函数
+)
 
 # Application definition
 
@@ -37,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.sessions',  # sessions
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
@@ -46,6 +49,9 @@ INSTALLED_APPS = [
     'operation',
     'xadmin',
     'crispy_forms',
+    'captcha',
+    'pure_pagination',
+
 ]
 AUTH_USER_MODEL = "users.UserProfile"  # app名.class名  # 覆盖默认的user表
 
@@ -75,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.media',
             ],
         },
     },
@@ -90,8 +97,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mxonline',
-        'USER': 'root',
-        'PASSWORD': '123456',
+        'USER': '···',
+        'PASSWORD': '···',
         'HOST': '127.0.0.1'
     }
 }
@@ -140,3 +147,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+EMAIL_HOST = "smtp.sina.com"
+EMAIL_PORT = 25
+EMAIL_HOST_USER = "···"
+EMAIL_HOST_PASSWORD = "···"
+EMAIL_USE_TLS = False
+EMAIL_FROM = "···"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
