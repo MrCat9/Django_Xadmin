@@ -139,6 +139,13 @@ Django有保护机制，需要csrf_token才能提交表单
 
 （见message_form.html）
 
+#### {{  }} 与 {%  %}的区别
+
+```
+{{ csrf_token }}是取值
+{% csrf_token %}会生成一段html代码
+```
+
 ### 网页提交表单（前端接收用户填写的数据，post给后端，后端把数据存入数据库）
 
 ```python
@@ -1958,6 +1965,15 @@ class OrgHomeView(View):
     def get(self, request, org_id):
         current_page = "home"
         course_org = CourseOrg.objects.get(id=int(org_id))
+
+        # 用户是否收藏了该课程机构
+        has_fav = False
+        if request.user.is_authenticated():  # 如果用户登录了
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+                has_fav = True
+        # MxOnline\templates\org_base.html
+        #                  {% if has_fav %}已收藏{% else %}收藏{% endif %}
+
         # all_courses = course_org.course_set.all()[:3]  # 取出所有以 course_org 为外键的 Course  # [models下的class名]_set  # 取3个
         all_courses = course_org.course_set.all()  # 取出所有以 course_org 为外键的 Course  # [models下的class名]_set
         all_teachers = course_org.teacher_set.all()
@@ -1966,6 +1982,7 @@ class OrgHomeView(View):
             "all_teachers": all_teachers,
             "course_org": course_org,
             "current_page": current_page,
+            "has_fav": has_fav,
 
         })
 ```
@@ -2086,6 +2103,86 @@ class OrgHomeView(View):
 
 
 ## 课程机构收藏功能
+
+
+
+
+### 配置url  MxOnline\apps\organization\urls.py
+
+```python
+    # 机构收藏
+    url(r'^add_fav/$', AddFavView.as_view(), name="add_fav"),
+```
+
+
+
+
+### 写view  MxOnline\apps\organization\views.py
+
+```python
+class AddFavView(View):
+    """
+    用户收藏，用户取消收藏
+    """
+    def post(self, request):
+        fav_id = request.POST.get('fav_id', 0)
+        fav_type = request.POST.get('fav_type', 0)
+
+        if not request.user.is_authenticated():  # 如果用户未登录
+            return HttpResponse('{"status": "fail", "msg": "用户未登录"}', content_type='application/json')  # 返回json  # json数据里面的引号要用双引号！！！
+            # 这里只回传json数据，跳转到登录页面由ajax完成
+
+        exist_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=int(fav_type))
+        if exist_records:  # 如果记录已经存在，说明用户是要取消收藏
+            exist_records.delete()
+            return HttpResponse('{"status": "success", "msg": "收藏"}', content_type='application/json')  # 返回json  # json数据里面的引号要用双引号！！！
+        else:
+            user_fav = UserFavorite()
+            if int(fav_id) > 0 and int(fav_type) > 0:
+                user_fav.user = request.user
+                user_fav.fav_id = int(fav_id)
+                user_fav.fav_type = int(fav_type)
+                user_fav.save()
+                return HttpResponse('{"status": "success", "msg": "已收藏"}', content_type='application/json')  # 返回json  # json数据里面的引号要用双引号！！！
+            else:
+                return HttpResponse('{"status": "fail", "msg": "收藏失败"}', content_type='application/json')  # 返回json  # json数据里面的引号要用双引号！！！
+```
+
+
+
+
+### 修改html  MxOnline\templates\org-base.html  中的ajax
+
+```html
+function add_fav(current_elem, fav_id, fav_type){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'org:add_fav' %}",
+        data:{'fav_id':fav_id, 'fav_type':fav_type},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");  {# 取csrf_token的值 #}
+        },                                                               {# {% csrf_token %} 会生成一段html代码 #}
+        success: function(data) {  {# data 是一个json数据 #}
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="{% url 'login' %}";  {# 跳转到登录页面 #}
+                }else{
+                    alert(data.msg)
+                }
+
+            }else if(data.status == 'success'){
+                current_elem.text(data.msg)
+            }
+        },
+    });
+}
+
+$('.collectionbtn').on('click', function(){  {# 监听点击 #}
+    add_fav($(this), {{ course_org.id }}, 2);  {# fav_id 为课程机构的id #}  {# fav_type 为2 （收藏的是课程机构） #}
+});
+```
 
 
 
