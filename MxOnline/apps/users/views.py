@@ -73,6 +73,7 @@ class RegisterView(View):
 
 class LoginView(View):
     def get(self, request):
+        # print(1/0)  # 测试 500 页面
         return render(request, "login.html", {})
 
     def post(self, request):
