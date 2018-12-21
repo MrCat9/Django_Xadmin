@@ -2188,3 +2188,86 @@ $('.collectionbtn').on('click', function(){  {# 监听点击 #}
 
 
 ## 课程功能
+
+
+
+
+## 
+
+
+
+
+## 全局404和500页面配置
+
+
+
+
+### 拷贝404和500的html到 MxOnline\templates 下
+
+
+
+
+### 配置url MxOnline\MxOnline\urls.py
+
+```python
+# 全局404页面配置
+handler404 = 'users.views.page_not_found'
+# 全局500页面配置
+handler500 = 'users.views.page_error'
+```
+
+
+
+
+### 定义 page_not_found 和 page_error 函数  MxOnline\apps\users\views.py
+
+```python
+def page_not_found(request):
+    # 全局404处理函数
+    from django.shortcuts import render_to_response
+    response = render_to_response('404.html', {})
+    response.status_code = 404
+    return response
+
+def page_error(request):
+    # 全局500处理函数
+    from django.shortcuts import render_to_response
+    response = render_to_response('500.html', {})
+    response.status_code = 500
+    return response
+```
+
+
+
+
+### MxOnline\MxOnline\settings.py
+
+```python
+DEBUG = False  # True为开发环境  False为生产环境（部署时用False）
+
+ALLOWED_HOSTS = ['*']  # * 表示所有的客户端都可以连
+```
+
+
+
+
+### 配置 static 文件路径
+
+MxOnline\MxOnline\urls.py
+
+```python
+    # 配置static文件的访问处理函数
+    url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
+    # settings.py 中的 DEBUG = False 时，STATICFILES_DIRS 会失效，此时需要自己配置static的url
+```
+
+MxOnline\MxOnline\settings.py
+
+```python
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+```
+
+
+
+
+## 
