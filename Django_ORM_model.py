@@ -45,10 +45,13 @@ Users.objects.filter(id=user_id).update(
 user_account=user_account,
 org_id=org
 )
+
 # 查询
- 
+# filter在没取到数据时返回空数组list，不会抛异常
+# get在没取到数据 或 取到的数据有多条时，抛出异常
+
 # 检索记录 get
-#get获取单个符合条件的记录,没找到或者超过一个都会抛出异常
+# get获取单个符合条件的记录,没找到或者超过一个都会抛出异常
 user = Users.objects.get(id=10)
  
 # 检索所有的记录 all
@@ -80,7 +83,7 @@ user = Users.objects.values_list('id', flat=True).all()
 # 这里也可以指定外键字段 使用双下划线指定，返回的键值与values中的参数一致
  
 # 条件查询exclude
-#和filter相反,查找不符合条件的那些记录
+# 和filter相反,查找不符合条件的那些记录
  
 # 条件查询 filter
  
